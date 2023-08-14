@@ -1,3 +1,4 @@
+from typing import List, Optional
 import pygame
 import random
 
@@ -15,7 +16,7 @@ WHITE = (255, 255, 255)
 # Function to check for winner
 
 
-def check_winner(board):
+def check_winner(board: List[List[str]]) -> Optional[str]:
     for row in board:
         if row[0] == row[1] == row[2] != ' ':
             return row[0]
@@ -33,7 +34,8 @@ def check_winner(board):
 # Function for CPU's turn with a simple AI
 
 
-def cpu_turn(board, cpu_symbol, player_symbol):
+def cpu_turn(board: List[List[str]], cpu_symbol: str) -> None:
+    player_symbol = 'O' if cpu_symbol == 'X' else 'X'
     # Try to win
     for row in range(ROWS):
         for col in range(COLS):
@@ -75,7 +77,7 @@ def game_loop():
 
     # If CPU is 'X', it goes first
     if cpu_symbol == 'X':
-        cpu_turn(board, cpu_symbol, player_symbol)
+        cpu_turn(board, cpu_symbol)
 
     running = True
     winner = None
@@ -91,7 +93,7 @@ def game_loop():
                     board[row][col] = player_symbol
                     winner = check_winner(board)
                     if winner is None:
-                        cpu_turn(board, cpu_symbol, player_symbol)
+                        cpu_turn(board, cpu_symbol)
                         winner = check_winner(board)
 
         # Drawing the game board
@@ -120,6 +122,7 @@ def game_loop():
         pygame.display.flip()
 
     pygame.quit()
+
 
 # Running the game loop
 game_loop()
