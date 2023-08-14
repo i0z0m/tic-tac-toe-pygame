@@ -1,6 +1,8 @@
-from typing import List, Optional
+
+from typing import List, Tuple, Optional
 import pygame
 import random
+
 
 # Constants
 WIDTH = 300
@@ -12,8 +14,6 @@ BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 WHITE = (255, 255, 255)
-
-# Function to check for winner
 
 
 def check_winner(board: List[List[str]]) -> Optional[str]:
@@ -31,8 +31,6 @@ def check_winner(board: List[List[str]]) -> Optional[str]:
         return 'Draw'
     return None
 
-# Function for CPU's turn with a simple AI
-
 
 def cpu_turn(board: List[List[str]], cpu_symbol: str) -> None:
     player_symbol = 'O' if cpu_symbol == 'X' else 'X'
@@ -44,7 +42,6 @@ def cpu_turn(board: List[List[str]], cpu_symbol: str) -> None:
                 if check_winner(board) == cpu_symbol:
                     return
                 board[row][col] = ' '
-
     # Try to block the player from winning
     for row in range(ROWS):
         for col in range(COLS):
@@ -54,7 +51,6 @@ def cpu_turn(board: List[List[str]], cpu_symbol: str) -> None:
                     board[row][col] = cpu_symbol
                     return
                 board[row][col] = ' '
-
     # Random move
     empty_cells = [(row, col) for row in range(ROWS)
                    for col in range(COLS) if board[row][col] == ' ']
@@ -62,18 +58,51 @@ def cpu_turn(board: List[List[str]], cpu_symbol: str) -> None:
         row, col = random.choice(empty_cells)
         board[row][col] = cpu_symbol
 
-# Game loop
 
-
-def game_loop():
+def initialize_game() -> Tuple[pygame.Surface, List[List[str]], str, str]:
     pygame.init()
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("Tic-Tac-Toe")
     board = [[' ' for _ in range(COLS)] for _ in range(ROWS)]
-
-    # Randomly assign roles
     player_symbol, cpu_symbol = ('X', 'O') if random.choice([
         True, False]) else ('O', 'X')
+    return screen, board, player_symbol, cpu_symbol
+
+
+def draw_board(screen: pygame.Surface, board: List[List[str]]) -> None:
+    screen.fill(WHITE)
+    for row in range(ROWS):
+        for col in range(COLS):
+            pygame.draw.rect(screen, BLACK, (col * CELL_SIZE,
+                             row * CELL_SIZE, CELL_SIZE, CELL_SIZE), 1)
+            symbol = board[row][col]
+            if symbol != ' ':
+                color = BLUE if symbol == 'X' else RED
+                font = pygame.font.Font(None, 72)
+                text = font.render(symbol, True, color)
+                screen.blit(text, (col * CELL_SIZE + CELL_SIZE //
+                            3, row * CELL_SIZE + CELL_SIZE // 4))
+
+
+def display_winner(screen: pygame.Surface, winner: str) -> None:
+    text_color = BLUE if winner == 'X' else RED if winner == 'O' else BLACK
+    font = pygame.font.Font(None, 36)
+    text = font.render(f"{winner} wins!" if winner !=
+                       'Draw' else "It's a Draw!", True, text_color)
+    screen.blit(text, (WIDTH // 4, HEIGHT // 2))
+
+
+def player_turn(board: List[List[str]], player_symbol: str, mouse_pos: Tuple[int, int]) -> Optional[str]:
+    col = mouse_pos[0] // CELL_SIZE
+    row = mouse_pos[1] // CELL_SIZE
+    if board[row][col] == ' ':
+        board[row][col] = player_symbol
+        return check_winner(board)
+    return None
+
+
+def game_loop():
+    screen, board, player_symbol, cpu_symbol = initialize_game()
 
     # If CPU is 'X', it goes first
     if cpu_symbol == 'X':
@@ -86,43 +115,20 @@ def game_loop():
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and winner is None:
-                mouse_pos = pygame.mouse.get_pos()
-                col = mouse_pos[0] // CELL_SIZE
-                row = mouse_pos[1] // CELL_SIZE
-                if board[row][col] == ' ':
-                    board[row][col] = player_symbol
+                winner = player_turn(board, player_symbol,
+                                     pygame.mouse.get_pos())
+                if winner is None:
+                    cpu_turn(board, cpu_symbol)
                     winner = check_winner(board)
-                    if winner is None:
-                        cpu_turn(board, cpu_symbol)
-                        winner = check_winner(board)
 
-        # Drawing the game board
-        screen.fill(WHITE)
-        for row in range(ROWS):
-            for col in range(COLS):
-                pygame.draw.rect(
-                    screen, BLACK, (col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE), 1)
-                symbol = board[row][col]
-                if symbol != ' ':
-                    color = BLUE if symbol == 'X' else RED
-                    font = pygame.font.Font(None, 72)
-                    text = font.render(symbol, True, color)
-                    screen.blit(text, (col * CELL_SIZE + CELL_SIZE //
-                                3, row * CELL_SIZE + CELL_SIZE // 4))
+        draw_board(screen, board)
 
         # Display winner
         if winner:
-            text_color = BLUE if winner == 'X' else RED if winner == 'O' else BLACK
-            font = pygame.font.Font(None, 36)
-            text = font.render(f"{winner} wins!" if winner !=
-                               'Draw' else "It's a Draw!", True, text_color)
-            text_rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 2))
-            screen.blit(text, text_rect)
+            display_winner(screen, winner)
 
         pygame.display.flip()
 
-    pygame.quit()
 
-
-# Running the game loop
-game_loop()
+if __name__ == "__main__":
+    game_loop()
