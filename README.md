@@ -1,3 +1,3 @@
 # tic-tac-toe-pygame
 
-Describe your project here.
+Tic-Tac-Toe made by pygame co-produced with ChatGPT
