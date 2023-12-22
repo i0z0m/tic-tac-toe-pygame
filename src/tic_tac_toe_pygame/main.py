@@ -52,8 +52,7 @@ def cpu_turn(board: List[List[str]], cpu_symbol: str) -> None:
                     return
                 board[row][col] = ' '
     # Random move
-    empty_cells = [(row, col) for row in range(ROWS)
-                   for col in range(COLS) if board[row][col] == ' ']
+    empty_cells = [(row, col) for row in range(ROWS) for col in range(COLS) if board[row][col] == ' ']
     if empty_cells:
         row, col = random.choice(empty_cells)
         board[row][col] = cpu_symbol
@@ -87,8 +86,7 @@ def draw_board(screen: pygame.Surface, board: List[List[str]]) -> None:
 def display_winner(screen: pygame.Surface, winner: str) -> None:
     text_color = BLUE if winner == 'X' else RED if winner == 'O' else BLACK
     font = pygame.font.Font(None, 36)
-    text = font.render(f"{winner} wins!" if winner !=
-                       'Draw' else "It's a Draw!", True, text_color)
+    text = font.render(f"{winner} wins!" if winner != 'Draw' else "It's a Draw!", True, text_color)
     screen.blit(text, (WIDTH // 4, HEIGHT // 2))
 
 
@@ -115,8 +113,7 @@ def game_loop():
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and winner is None:
-                winner = player_turn(board, player_symbol,
-                                     pygame.mouse.get_pos())
+                winner = player_turn(board, player_symbol, pygame.mouse.get_pos())
                 if winner is None:
                     cpu_turn(board, cpu_symbol)
                     winner = check_winner(board)
