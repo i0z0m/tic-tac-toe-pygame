@@ -2,7 +2,7 @@
 from typing import List, Tuple, Optional
 import pygame
 import random
-
+import asyncio
 
 # Constants
 WIDTH = 300
@@ -93,13 +93,18 @@ def display_winner(screen: pygame.Surface, winner: str) -> None:
 def player_turn(board: List[List[str]], player_symbol: str, mouse_pos: Tuple[int, int]) -> Optional[str]:
     col = mouse_pos[0] // CELL_SIZE
     row = mouse_pos[1] // CELL_SIZE
-    if board[row][col] == ' ':
-        board[row][col] = player_symbol
-        return check_winner(board)
+
+    # ボードの範囲内かどうかを確認
+    if 0 <= row < len(board) and 0 <= col < len(board[0]):
+        if board[row][col] == ' ':
+            board[row][col] = player_symbol
+            return check_winner(board)
+
     return None
 
 
-def game_loop():
+async def game_loop():
+    await asyncio.sleep(0)
     screen, board, player_symbol, cpu_symbol = initialize_game()
 
     # If CPU is 'X', it goes first
@@ -127,5 +132,7 @@ def game_loop():
         pygame.display.flip()
 
 
-if __name__ == "__main__":
-    game_loop()
+async def main():
+    await game_loop()
+
+asyncio.run(main())
