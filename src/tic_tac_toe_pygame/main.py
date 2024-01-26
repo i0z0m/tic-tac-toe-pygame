@@ -116,9 +116,8 @@ def draw_board(screen: pygame.Surface, board: List[List[str]]) -> None:
 
 
 def display_winner(screen: pygame.Surface, winner: str) -> None:
-    text_color = BLUE if winner == 'X' else RED if winner == 'O' else BLACK
     font = pygame.font.Font(None, FONT_SIZE)
-    text = font.render(f" {winner} won!" if winner != 'Draw' else "  Draw!", True, text_color)
+    text = font.render(f" {winner} won!" if winner != 'Draw' else "  Draw!", True, BLACK)
     screen.blit(text, (WIDTH // 4, HEIGHT // 2))
 
 
