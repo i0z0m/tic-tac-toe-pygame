@@ -71,17 +71,18 @@ def initialize_game() -> Tuple[pygame.Surface, List[List[str]], str, str]:
 
 def draw_board(screen: pygame.Surface, board: List[List[str]]) -> None:
     screen.fill(WHITE)
+    for row in range(1, ROWS):
+        pygame.draw.line(screen, BLACK, (0, row * CELL_SIZE), (COLS * CELL_SIZE, row * CELL_SIZE), 1)
+    for col in range(1, COLS):
+        pygame.draw.line(screen, BLACK, (col * CELL_SIZE, 0), (col * CELL_SIZE, ROWS * CELL_SIZE), 1)
     for row in range(ROWS):
         for col in range(COLS):
-            pygame.draw.rect(screen, BLACK, (col * CELL_SIZE,
-                             row * CELL_SIZE, CELL_SIZE, CELL_SIZE), 1)
             symbol = board[row][col]
             if symbol != ' ':
                 color = BLUE if symbol == 'X' else RED
                 font = pygame.font.Font(None, FONT_SIZE)
                 text = font.render(symbol, True, color)
-                screen.blit(text, (col * CELL_SIZE + CELL_SIZE //
-                            3, row * CELL_SIZE + CELL_SIZE // 4))
+                screen.blit(text, (col * CELL_SIZE + CELL_SIZE // 3, row * CELL_SIZE + CELL_SIZE // 4))
 
 
 def display_winner(screen: pygame.Surface, winner: str) -> None:
