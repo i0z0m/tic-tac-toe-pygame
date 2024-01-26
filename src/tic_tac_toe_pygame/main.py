@@ -105,7 +105,6 @@ def player_turn(board: List[List[str]], player_symbol: str, mouse_pos: Tuple[int
 
 
 async def game_loop():
-    await asyncio.sleep(0)
     screen, board, player_symbol, cpu_symbol = initialize_game()
 
     # If CPU is 'X', it goes first
@@ -131,6 +130,7 @@ async def game_loop():
             display_winner(screen, winner)
 
         pygame.display.flip()
+        await asyncio.sleep(0)
 
 
 async def main():
