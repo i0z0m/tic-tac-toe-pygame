@@ -4,13 +4,13 @@ import pygame
 import random
 import asyncio
 
-CELL_SIZE = 30  # Define a constant cell size
+CELL_SIZE = 50
+FONT_SIZE = CELL_SIZE - 10
 ROWS = 8
 COLS = 5
+K = min(ROWS, COLS)
 WIDTH = CELL_SIZE * COLS
 HEIGHT = CELL_SIZE * ROWS
-FONT_SIZE = min(WIDTH // COLS, HEIGHT // ROWS)
-K = min(ROWS, COLS)
 BLACK = (50, 50, 50)
 RED = (231, 76, 60)
 BLUE = (52, 152, 219)
