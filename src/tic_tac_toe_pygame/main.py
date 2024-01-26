@@ -7,8 +7,9 @@ import asyncio
 # Constants
 WIDTH = 210
 HEIGHT = 210
-ROWS = 3
-COLS = 3
+ROWS = 5
+COLS = 5
+K = min(ROWS, COLS)
 CELL_SIZE = WIDTH // COLS
 FONT_SIZE = WIDTH // 5
 BLACK = (50, 50, 50)
@@ -17,30 +18,45 @@ BLUE = (52, 152, 219)
 WHITE = (236, 240, 241)
 
 
-def check_winner(board: List[List[str]]) -> Optional[str]:
+def check_sequence(sequence: List[str], k: int) -> Optional[str]:
+    for i in range(len(sequence) - k + 1):
+        if all(sequence[i + j] == sequence[i] != ' ' for j in range(k)):
+            return sequence[i]
+    return None
+
+def check_winner(board: List[List[str]], k: int) -> Optional[str]:
+    # Check rows
     for row in board:
-        if row[0] == row[1] == row[2] != ' ':
-            return row[0]
+        winner = check_sequence(row, k)
+        if winner is not None:
+            return winner
+    # Check columns
     for col in range(COLS):
-        if board[0][col] == board[1][col] == board[2][col] != ' ':
-            return board[0][col]
-    if board[0][0] == board[1][1] == board[2][2] != ' ':
-        return board[0][0]
-    if board[0][2] == board[1][1] == board[2][0] != ' ':
-        return board[0][2]
+        winner = check_sequence([board[row][col] for row in range(ROWS)], k)
+        if winner is not None:
+            return winner
+    # Check main diagonal
+    winner = check_sequence([board[i][i] for i in range(ROWS)], k)
+    if winner is not None:
+        return winner
+    # Check secondary diagonal
+    winner = check_sequence([board[i][ROWS - i - 1] for i in range(ROWS)], k)
+    if winner is not None:
+        return winner
+    # Check for draw
     if all(board[row][col] != ' ' for row in range(ROWS) for col in range(COLS)):
         return 'Draw'
     return None
 
 
-def cpu_turn(board: List[List[str]], cpu_symbol: str) -> None:
+def cpu_turn(board: List[List[str]], cpu_symbol: str, k: int) -> None:
     player_symbol = 'O' if cpu_symbol == 'X' else 'X'
     # Try to win
     for row in range(ROWS):
         for col in range(COLS):
             if board[row][col] == ' ':
                 board[row][col] = cpu_symbol
-                if check_winner(board) == cpu_symbol:
+                if check_winner(board, k) == cpu_symbol:
                     return
                 board[row][col] = ' '
     # Try to block the player from winning
@@ -48,7 +64,7 @@ def cpu_turn(board: List[List[str]], cpu_symbol: str) -> None:
         for col in range(COLS):
             if board[row][col] == ' ':
                 board[row][col] = player_symbol
-                if check_winner(board) == player_symbol:
+                if check_winner(board, k) == player_symbol:
                     board[row][col] = cpu_symbol
                     return
                 board[row][col] = ' '
@@ -100,17 +116,17 @@ def player_turn(board: List[List[str]], player_symbol: str, mouse_pos: Tuple[int
     if 0 <= row < len(board) and 0 <= col < len(board[0]):
         if board[row][col] == ' ':
             board[row][col] = player_symbol
-            return check_winner(board)
+            return check_winner(board, K)
 
     return None
 
 
-async def game_loop():
+async def game_loop(k: int):
     screen, board, player_symbol, cpu_symbol = initialize_game()
 
     # If CPU is 'X', it goes first
     if cpu_symbol == 'X':
-        cpu_turn(board, cpu_symbol)
+        cpu_turn(board, cpu_symbol, k)
 
     running = True
     winner = None
@@ -121,8 +137,8 @@ async def game_loop():
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and winner is None:
                 winner = player_turn(board, player_symbol, pygame.mouse.get_pos())
                 if winner is None:
-                    cpu_turn(board, cpu_symbol)
-                    winner = check_winner(board)
+                    cpu_turn(board, cpu_symbol, k)
+                    winner = check_winner(board, k)
 
         draw_board(screen, board)
 
@@ -135,6 +151,6 @@ async def game_loop():
 
 
 async def main():
-    await game_loop()
+    await game_loop(K)
 
 asyncio.run(main())
