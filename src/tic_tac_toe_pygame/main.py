@@ -5,11 +5,12 @@ import random
 import asyncio
 
 # Constants
-WIDTH = 300
-HEIGHT = 300
+WIDTH = 210
+HEIGHT = 210
 ROWS = 3
 COLS = 3
 CELL_SIZE = WIDTH // COLS
+FONT_SIZE = WIDTH // 5
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
@@ -77,7 +78,7 @@ def draw_board(screen: pygame.Surface, board: List[List[str]]) -> None:
             symbol = board[row][col]
             if symbol != ' ':
                 color = BLUE if symbol == 'X' else RED
-                font = pygame.font.Font(None, 72)
+                font = pygame.font.Font(None, FONT_SIZE)
                 text = font.render(symbol, True, color)
                 screen.blit(text, (col * CELL_SIZE + CELL_SIZE //
                             3, row * CELL_SIZE + CELL_SIZE // 4))
@@ -85,7 +86,7 @@ def draw_board(screen: pygame.Surface, board: List[List[str]]) -> None:
 
 def display_winner(screen: pygame.Surface, winner: str) -> None:
     text_color = BLUE if winner == 'X' else RED if winner == 'O' else BLACK
-    font = pygame.font.Font(None, 36)
+    font = pygame.font.Font(None, FONT_SIZE)
     text = font.render(f"{winner} wins!" if winner != 'Draw' else "It's a Draw!", True, text_color)
     screen.blit(text, (WIDTH // 4, HEIGHT // 2))
 
