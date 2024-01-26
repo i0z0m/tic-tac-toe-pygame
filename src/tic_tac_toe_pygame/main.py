@@ -108,15 +108,18 @@ def display_winner(screen: pygame.Surface, winner: str) -> None:
     screen.blit(text, (WIDTH // 4, HEIGHT // 2))
 
 
-def player_turn(board: List[List[str]], player_symbol: str, mouse_pos: Tuple[int, int]) -> Optional[str]:
+def player_turn(board: List[List[str]], player_symbol: str, mouse_pos: Tuple[int, int], k: int) -> Optional[str]:
     col = mouse_pos[0] // CELL_SIZE
     row = mouse_pos[1] // CELL_SIZE
 
-    # ボードの範囲内かどうかを確認
+    # Check if the click is within the board
     if 0 <= row < len(board) and 0 <= col < len(board[0]):
-        if board[row][col] == ' ':
+        # If the cell is not empty, return 'invalid'
+        if board[row][col] != ' ':
+            return 'invalid'
+        else:
             board[row][col] = player_symbol
-            return check_winner(board, K)
+            return check_winner(board, k)
 
     return None
 
@@ -135,10 +138,12 @@ async def game_loop(k: int):
             if event.type == pygame.QUIT:
                 running = False
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and winner is None:
-                winner = player_turn(board, player_symbol, pygame.mouse.get_pos())
-                if winner is None:
-                    cpu_turn(board, cpu_symbol, k)
-                    winner = check_winner(board, k)
+                result = player_turn(board, player_symbol, pygame.mouse.get_pos(), k)
+                if result != 'invalid':
+                    winner = result
+                    if winner is None:
+                        cpu_turn(board, cpu_symbol, k)
+                        winner = check_winner(board, k)
 
         draw_board(screen, board)
 
