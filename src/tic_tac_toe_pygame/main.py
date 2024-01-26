@@ -29,24 +29,31 @@ def check_winner(board: List[List[str]], k: int) -> Optional[str]:
         winner = check_sequence(row, k)
         if winner is not None:
             return winner
+
     # Check columns
     for col in range(COLS):
-        winner = check_sequence([board[row][col] for row in range(ROWS)], k)
+        column = [board[row][col] for row in range(ROWS)]
+        winner = check_sequence(column, k)
         if winner is not None:
             return winner
-    # Check diagonals only if the board is a square
+
+    # Check main diagonal (only for square boards)
     if ROWS == COLS:
-        # Check main diagonal
-        winner = check_sequence([board[i][i] for i in range(ROWS)], k)
+        main_diagonal = [board[i][i] for i in range(ROWS)]
+        winner = check_sequence(main_diagonal, k)
         if winner is not None:
             return winner
-        # Check secondary diagonal
-        winner = check_sequence([board[i][ROWS - i - 1] for i in range(ROWS)], k)
+
+        # Check secondary diagonal (only for square boards)
+        secondary_diagonal = [board[i][ROWS - i - 1] for i in range(ROWS)]
+        winner = check_sequence(secondary_diagonal, k)
         if winner is not None:
             return winner
+
     # Check for draw
-    if all(board[row][col] != ' ' for row in range(ROWS) for col in range(COLS)):
+    if all(cell != ' ' for row in board for cell in row):
         return 'Draw'
+
     return None
 
 
