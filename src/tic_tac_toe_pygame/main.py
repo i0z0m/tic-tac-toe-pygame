@@ -4,14 +4,13 @@ import pygame
 import random
 import asyncio
 
-# Constants
-WIDTH = 210
-HEIGHT = 210
-ROWS = 5
+CELL_SIZE = 30  # Define a constant cell size
+ROWS = 8
 COLS = 5
+WIDTH = CELL_SIZE * COLS
+HEIGHT = CELL_SIZE * ROWS
+FONT_SIZE = min(WIDTH // COLS, HEIGHT // ROWS)
 K = min(ROWS, COLS)
-CELL_SIZE = WIDTH // COLS
-FONT_SIZE = WIDTH // 5
 BLACK = (50, 50, 50)
 RED = (231, 76, 60)
 BLUE = (52, 152, 219)
@@ -35,14 +34,16 @@ def check_winner(board: List[List[str]], k: int) -> Optional[str]:
         winner = check_sequence([board[row][col] for row in range(ROWS)], k)
         if winner is not None:
             return winner
-    # Check main diagonal
-    winner = check_sequence([board[i][i] for i in range(ROWS)], k)
-    if winner is not None:
-        return winner
-    # Check secondary diagonal
-    winner = check_sequence([board[i][ROWS - i - 1] for i in range(ROWS)], k)
-    if winner is not None:
-        return winner
+    # Check diagonals only if the board is a square
+    if ROWS == COLS:
+        # Check main diagonal
+        winner = check_sequence([board[i][i] for i in range(ROWS)], k)
+        if winner is not None:
+            return winner
+        # Check secondary diagonal
+        winner = check_sequence([board[i][ROWS - i - 1] for i in range(ROWS)], k)
+        if winner is not None:
+            return winner
     # Check for draw
     if all(board[row][col] != ' ' for row in range(ROWS) for col in range(COLS)):
         return 'Draw'
