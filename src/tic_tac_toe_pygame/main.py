@@ -11,10 +11,10 @@ ROWS = 3
 COLS = 3
 CELL_SIZE = WIDTH // COLS
 FONT_SIZE = WIDTH // 5
-BLACK = (0, 0, 0)
-RED = (255, 0, 0)
-BLUE = (0, 0, 255)
-WHITE = (255, 255, 255)
+BLACK = (50, 50, 50)
+RED = (231, 76, 60)
+BLUE = (52, 152, 219)
+WHITE = (236, 240, 241)
 
 
 def check_winner(board: List[List[str]]) -> Optional[str]:
