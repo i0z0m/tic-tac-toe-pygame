@@ -23,15 +23,6 @@ def check_sequence(sequence: List[str], k: int) -> Optional[str]:
             return sequence[i]
     return None
 
-def get_diagonals(board):
-    # Get main diagonal
-    main_diagonal = [board[i][i] for i in range(min(ROWS, COLS))]
-
-    # Get secondary diagonal
-    secondary_diagonal = [board[i][ROWS - i - 1] for i in range(min(ROWS, COLS))]
-
-    return main_diagonal, secondary_diagonal
-
 def check_sequences(sequences, k):
     for sequence in sequences:
         winner = check_sequence(sequence, k)
@@ -39,12 +30,29 @@ def check_sequences(sequences, k):
             return winner
     return None
 
+def get_diagonals(board):
+    diagonals = []
+
+    # Get diagonals from top-left to bottom-right
+    for r in range(ROWS):
+        diagonals.append([board[r+i][i] for i in range(min(ROWS-r, COLS))])
+    for c in range(1, COLS):
+        diagonals.append([board[i][c+i] for i in range(min(COLS-c, ROWS))])
+
+    # Get diagonals from top-right to bottom-left
+    for r in range(ROWS):
+        diagonals.append([board[r+i][COLS-i-1] for i in range(min(ROWS-r, COLS))])
+    for c in range(COLS-2, -1, -1):
+        diagonals.append([board[i][c-i] for i in range(min(c+1, ROWS))])
+
+    return diagonals
+
 def check_winner(board: List[List[str]], k: int) -> Optional[str]:
     rows = board
     cols = [[board[row][col] for row in range(ROWS)] for col in range(COLS)]
-    main_diagonal, secondary_diagonal = get_diagonals(board)
+    diagonals = get_diagonals(board)
 
-    winner = check_sequences(rows + cols + [main_diagonal, secondary_diagonal], k)
+    winner = check_sequences(rows + cols + diagonals, k)
     if winner is not None:
         return winner
 
