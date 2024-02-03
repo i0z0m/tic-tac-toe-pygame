@@ -1,21 +1,38 @@
 
 from typing import List, Tuple, Optional
+from dataclasses import dataclass
 import pygame
 import random
 import asyncio
 
-CELL_SIZE = 50
-FONT_SIZE = CELL_SIZE - 10
-ROWS = 8
-COLS = 5
-K = min(ROWS, COLS)
-WIDTH = CELL_SIZE * COLS
-HEIGHT = CELL_SIZE * ROWS
-BLACK = (50, 50, 50)
-RED = (231, 76, 60)
-BLUE = (52, 152, 219)
-WHITE = (236, 240, 241)
+CELL_SIZE: int = 50
+FONT_SIZE: int = CELL_SIZE - 10
+ROWS: int = 8
+COLS: int = 5
+K: int = min(ROWS, COLS)
+WIDTH: int = CELL_SIZE * COLS
+HEIGHT: int = CELL_SIZE * ROWS
 
+@dataclass
+class Color:
+    r: int
+    g: int
+    b: int
+
+    def __post_init__(self):
+        for color_value in (self.r, self.g, self.b):
+            if not 0 <= color_value <= 255:
+                raise ValueError("Color values must be between 0 and 255")
+
+    def __iter__(self):
+        yield self.r
+        yield self.g
+        yield self.b
+
+BLACK: Color = Color(50, 50, 50)
+RED: Color = Color(231, 76, 60)
+BLUE: Color = Color(52, 152, 219)
+WHITE: Color = Color(236, 240, 241)
 
 def check_sequence(sequence: List[str], k: int) -> Optional[str]:
     for i in range(len(sequence) - k + 1):
@@ -100,16 +117,16 @@ def initialize_game() -> Tuple[pygame.Surface, List[List[str]], str, str]:
 
 
 def draw_board(screen: pygame.Surface, board: List[List[str]]) -> None:
-    screen.fill(WHITE)
+    screen.fill(tuple(WHITE))
     for row in range(1, ROWS):
-        pygame.draw.line(screen, BLACK, (0, row * CELL_SIZE), (COLS * CELL_SIZE, row * CELL_SIZE), 1)
+        pygame.draw.line(screen, tuple(BLACK), (0, row * CELL_SIZE), (COLS * CELL_SIZE, row * CELL_SIZE), 1)
     for col in range(1, COLS):
-        pygame.draw.line(screen, BLACK, (col * CELL_SIZE, 0), (col * CELL_SIZE, ROWS * CELL_SIZE), 1)
+        pygame.draw.line(screen, tuple(BLACK), (col * CELL_SIZE, 0), (col * CELL_SIZE, ROWS * CELL_SIZE), 1)
     for row in range(ROWS):
         for col in range(COLS):
             symbol = board[row][col]
             if symbol != ' ':
-                color = BLUE if symbol == 'X' else RED
+                color = tuple(BLUE) if symbol == 'X' else tuple(RED)
                 font = pygame.font.Font(None, FONT_SIZE)
                 text = font.render(symbol, True, color)
                 screen.blit(text, (col * CELL_SIZE + CELL_SIZE // 3, row * CELL_SIZE + CELL_SIZE // 4))
@@ -117,7 +134,7 @@ def draw_board(screen: pygame.Surface, board: List[List[str]]) -> None:
 
 def display_winner(screen: pygame.Surface, winner: str) -> None:
     font = pygame.font.Font(None, FONT_SIZE)
-    text = font.render(f" {winner} won!" if winner != 'Draw' else "  Draw!", True, BLACK)
+    text = font.render(f" {winner} won!" if winner != 'Draw' else "  Draw!", True, tuple(BLACK))
     screen.blit(text, (WIDTH // 4, HEIGHT // 2))
 
 
